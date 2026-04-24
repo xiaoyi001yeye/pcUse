@@ -1,0 +1,10 @@
+provider: openai
+model: gpt-4o-mini
+base_url: https://api.openai.com/v1
+execution_mode: structured
+auto_execute: false
+require_confirmation: true
+runtime:
+  host: 127.0.0.1
+  port: 8765
+  data_dir: ./.pc-use-agent

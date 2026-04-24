@@ -1,0 +1,51 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+dist/
+.vite/
+.turbo/
+coverage/
+
+# Rust
+/target/
+apps/desktop-host/src-tauri/target/
+Cargo.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+agent-runtime/.venv/
+agent-runtime/dist/
+agent-runtime/build/
+*.spec
+
+# Local data
+storage/app.db
+storage/logs/*
+storage/screenshots/*
+storage/cache/*
+storage/exports/*
+!storage/logs/.keep
+!storage/screenshots/.keep
+!storage/cache/.keep
+!storage/exports/.keep
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Tauri generated artifacts
+apps/desktop-host/src-tauri/gen/
+apps/desktop-host/src-tauri/icons/*.ico
+apps/desktop-host/src-tauri/icons/*.icns

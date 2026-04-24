@@ -1,0 +1,47 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "PC-Use Agent",
+  "version": "0.2.0",
+  "identifier": "com.pcuse.agent",
+  "build": {
+    "beforeDevCommand": "pnpm --filter @pc-use-agent/app-ui dev",
+    "devUrl": "http://127.0.0.1:1420",
+    "beforeBuildCommand": "pnpm --filter @pc-use-agent/app-ui build",
+    "frontendDist": "../../app-ui/dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "PC-Use Agent",
+        "width": 1440,
+        "height": 960,
+        "minWidth": 1180,
+        "minHeight": 760,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "msi"],
+    "externalBin": ["bin/pc-use-agent-runtime"],
+    "resources": [
+      "../../../agent-runtime",
+      "../../../security",
+      "../../../storage/.keep"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "perMachine",
+        "displayLanguageSelector": true
+      },
+      "wix": {
+        "language": "zh-CN"
+      }
+    }
+  }
+}

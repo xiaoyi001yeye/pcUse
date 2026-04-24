@@ -1,0 +1,20 @@
+{
+  "name": "pc-use-agent",
+  "version": "0.2.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "pnpm --filter @pc-use-agent/app-ui dev",
+    "dev:desktop": "pnpm --filter @pc-use-agent/desktop-host tauri dev",
+    "build": "turbo run build",
+    "build:ui": "pnpm --filter @pc-use-agent/app-ui build",
+    "tauri": "pnpm --filter @pc-use-agent/desktop-host tauri",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "turbo": "^2.5.3"
+  }
+}

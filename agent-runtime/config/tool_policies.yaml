@@ -1,0 +1,13 @@
+tools:
+  file:
+    enabled: true
+  cmd:
+    enabled: true
+    require_confirmation: true
+  browser:
+    enabled: true
+  uia:
+    enabled: true
+    require_confirmation: true
+  vision:
+    enabled: true

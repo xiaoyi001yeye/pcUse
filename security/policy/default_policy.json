@@ -1,0 +1,30 @@
+{
+  "allowed_file_roots": [
+    "%USERPROFILE%",
+    "%PUBLIC%"
+  ],
+  "blocked_command_patterns": [
+    "\\bformat\\b",
+    "\\breg\\s+delete\\b",
+    "\\bshutdown\\b",
+    "\\brmdir\\s+/s\\b",
+    "\\brd\\s+/s\\b"
+  ],
+  "risky_command_patterns": [
+    "\\bdel\\b",
+    "\\bRemove-Item\\b",
+    "\\bSet-ExecutionPolicy\\b",
+    "\\bInvoke-WebRequest\\b",
+    "\\bcurl\\b",
+    "\\bwget\\b"
+  ],
+  "tools": {
+    "file": { "enabled": true, "require_confirmation": false, "allowed_actions": ["open", "read_preview", "list_dir", "exists"] },
+    "cmd": { "enabled": true, "require_confirmation": true, "allowed_actions": ["run"] },
+    "browser": { "enabled": true, "require_confirmation": false, "allowed_actions": ["open_url", "search", "click_selector"] },
+    "uia": { "enabled": true, "require_confirmation": true, "allowed_actions": ["list_windows", "click_text"] },
+    "vision": { "enabled": true, "require_confirmation": false, "allowed_actions": ["screenshot"] },
+    "system": { "enabled": true, "require_confirmation": false, "allowed_actions": ["context", "info"] },
+    "registry": { "enabled": false, "require_confirmation": true, "allowed_actions": [] }
+  }
+}

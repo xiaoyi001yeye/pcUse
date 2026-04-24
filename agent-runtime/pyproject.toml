@@ -1,0 +1,13 @@
+[project]
+name = "pc-use-agent-runtime"
+version = "0.2.0"
+description = "Local Python runtime for PC-Use Agent"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100

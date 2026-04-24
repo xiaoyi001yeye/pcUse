@@ -1,0 +1,16 @@
+{
+  "name": "@pc-use-agent/desktop-host",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "lint": "cargo fmt --check --manifest-path src-tauri/Cargo.toml",
+    "typecheck": "cargo check --manifest-path src-tauri/Cargo.toml"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.5.0"
+  }
+}

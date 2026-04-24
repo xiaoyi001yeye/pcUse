@@ -1,0 +1,20 @@
+[
+  {
+    "id": "delete-files",
+    "description": "Deleting files or directories",
+    "patterns": ["del", "Remove-Item", "rmdir /s", "rd /s"],
+    "confirmation": "required"
+  },
+  {
+    "id": "system-settings",
+    "description": "Changing registry, execution policy, startup items, firewall, or services",
+    "patterns": ["reg", "Set-ExecutionPolicy", "sc.exe", "netsh"],
+    "confirmation": "required"
+  },
+  {
+    "id": "network-download-execute",
+    "description": "Downloading content and executing it",
+    "patterns": ["curl", "wget", "Invoke-WebRequest", "Start-Process"],
+    "confirmation": "required"
+  }
+]
