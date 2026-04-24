@@ -1,14 +1,16 @@
 import { create } from 'zustand';
-import type { AppSettings, ChatMessage, ExecutionMode, RuntimeStatus, TaskContext } from '../types';
+import type { AppSettings, ChatMessage, ExecutionMode, RuntimeStatus, SystemInfo, TaskContext } from '../types';
 
 interface AppState {
   activePage: string;
   runtimeStatus: RuntimeStatus;
+  systemInfo?: SystemInfo;
   settings: AppSettings;
   messages: ChatMessage[];
   taskContext: TaskContext;
   setActivePage: (page: string) => void;
   setRuntimeStatus: (status: RuntimeStatus) => void;
+  setSystemInfo: (info: SystemInfo) => void;
   updateSettings: (settings: Partial<AppSettings>) => void;
   addMessage: (message: ChatMessage) => void;
   updateLastAssistant: (patch: Partial<ChatMessage>) => void;
@@ -21,6 +23,7 @@ const defaultSettings: AppSettings = {
   provider: 'OpenAI',
   model: 'gpt-4o-mini',
   baseUrl: 'https://api.openai.com/v1',
+  apiKey: '',
   executionMode: 'structured',
   autoExecute: false,
   requireConfirmation: true,
@@ -31,20 +34,22 @@ const defaultContext: TaskContext = {
   currentWindow: '-',
   currentMode: 'structured',
   permissionStatus: [
-    { name: '\u6587\u4ef6\u8bbf\u95ee', value: '\u5df2\u6388\u6743', level: 'ok' },
-    { name: '\u547d\u4ee4\u6267\u884c', value: '\u5df2\u6388\u6743', level: 'ok' },
-    { name: '\u6d4f\u89c8\u5668\u63a7\u5236', value: '\u9700\u786e\u8ba4', level: 'warn' },
+    { name: '文件访问', value: '已授权', level: 'ok' },
+    { name: '命令执行', value: '已授权', level: 'ok' },
+    { name: '浏览器控制', value: '需确认', level: 'warn' },
   ],
 };
 
 export const useAppStore = create<AppState>((set) => ({
   activePage: 'chat',
   runtimeStatus: 'offline',
+  systemInfo: undefined,
   settings: defaultSettings,
   messages: [],
   taskContext: defaultContext,
   setActivePage: (page) => set({ activePage: page }),
   setRuntimeStatus: (status) => set({ runtimeStatus: status }),
+  setSystemInfo: (info) => set({ systemInfo: info }),
   updateSettings: (settings) => set((state) => ({ settings: { ...state.settings, ...settings } })),
   addMessage: (message) => set((state) => ({ messages: [...state.messages, message] })),
   updateLastAssistant: (patch) =>

@@ -12,6 +12,7 @@ coverage/
 # Rust
 /target/
 apps/desktop-host/src-tauri/target/
+apps/desktop-host/src-tauri/bin/
 Cargo.lock
 
 # Python

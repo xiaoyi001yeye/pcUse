@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import type { RuntimeHealth, TaskRequest, TaskResponse } from '../types';
+import type { AppSettings, RuntimeHealth, SystemInfo, TaskRequest, TaskResponse } from '../types';
 
 function isTauri(): boolean {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
@@ -17,15 +17,39 @@ async function mockInvoke<T>(command: string, args?: Record<string, unknown>): P
   if (command === 'runtime_health') {
     return { ok: true, status: 'online', version: '0.2.0-dev', base_url: 'mock://runtime' } as T;
   }
+  if (command === 'get_system_info') {
+    return {
+      os: navigator.platform.toLowerCase().includes('mac') ? 'macos' : 'browser',
+      os_display: navigator.platform.toLowerCase().includes('mac') ? 'macOS' : navigator.platform,
+      arch: navigator.userAgent.includes('arm') ? 'aarch64' : 'unknown',
+      user: 'Local User',
+      computer: 'Local Machine',
+      current_dir: '',
+    } as T;
+  }
+  if (command === 'read_settings') {
+    return {
+      provider: 'OpenAI',
+      model: 'gpt-4o-mini',
+      baseUrl: 'https://api.openai.com/v1',
+      apiKey: '',
+      executionMode: 'structured',
+      autoExecute: false,
+      requireConfirmation: true,
+    } as T;
+  }
+  if (command === 'write_settings') {
+    return { ok: true } as T;
+  }
   if (command === 'send_task') {
     const payload = args?.payload as TaskRequest | undefined;
     return {
       task_id: `mock-${Date.now()}`,
       status: 'success',
-      summary: payload?.prompt ? `\u5df2\u5b8c\u6210: ${payload.prompt}` : '\u5df2\u5b8c\u6210\u4efb\u52a1',
+      summary: payload?.prompt ? `已完成: ${payload.prompt}` : '已完成任务',
       steps: [
-        { id: 's1', title: '\u89e3\u6790\u7528\u6237\u6307\u4ee4', status: 'success', tool: 'planner', action: 'plan', output: { prompt: payload?.prompt } },
-        { id: 's2', title: '\u6267\u884c\u672c\u5730\u5de5\u5177', status: 'success', tool: 'mock', action: 'run' },
+        { id: 's1', title: '解析用户指令', status: 'success', tool: 'planner', action: 'plan', output: { prompt: payload?.prompt } },
+        { id: 's2', title: '执行本地工具', status: 'success', tool: 'mock', action: 'run' },
       ],
     } as T;
   }
@@ -40,5 +64,7 @@ export const apiClient = {
   startRuntime: () => tauriInvoke<RuntimeHealth>('start_runtime'),
   stopRuntime: () => tauriInvoke<{ ok: boolean }>('stop_runtime'),
   sendTask: (payload: TaskRequest) => tauriInvoke<TaskResponse>('send_task', { payload }),
-  getSystemInfo: () => tauriInvoke<Record<string, unknown>>('get_system_info'),
+  readSettings: () => tauriInvoke<AppSettings>('read_settings'),
+  writeSettings: (settings: AppSettings) => tauriInvoke<{ ok: boolean }>('write_settings', { settings }),
+  getSystemInfo: () => tauriInvoke<SystemInfo>('get_system_info'),
 };

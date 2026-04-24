@@ -16,7 +16,7 @@ export function ChatPage() {
 
   const hasMessages = messages.length > 0;
   const placeholder = useMemo(
-    () => '\u8f93\u5165\u4f60\u7684\u6307\u4ee4\uff0c\u4f8b\u5982\uff1a\u6253\u5f00\u8bb0\u4e8b\u672c\u3001\u8fd0\u884c ipconfig\u3001\u6253\u5f00\u6d4f\u89c8\u5668\u8bbf\u95ee\u767e\u5ea6',
+    () => '输入你的指令，例如：打开记事本、运行 ipconfig、打开浏览器访问百度',
     [],
   );
 
@@ -27,7 +27,7 @@ export function ChatPage() {
     setInput('');
     addMessage({ id: createId('msg'), role: 'user', content: prompt, createdAt: new Date().toISOString() });
     const assistantId = createId('msg');
-    addMessage({ id: assistantId, role: 'assistant', content: '\u6b63\u5728\u89e3\u6790\u5e76\u6267\u884c\u4efb\u52a1...', createdAt: new Date().toISOString() });
+    addMessage({ id: assistantId, role: 'assistant', content: '正在解析并执行任务...', createdAt: new Date().toISOString() });
     try {
       const health = await apiClient.health();
       if (!health.ok) {
@@ -49,7 +49,7 @@ export function ChatPage() {
       });
     } catch (error) {
       useAppStore.getState().updateLastAssistant({
-        content: error instanceof Error ? error.message : '\u4efb\u52a1\u6267\u884c\u5931\u8d25',
+        content: error instanceof Error ? error.message : '任务执行失败',
       });
     }
   }
@@ -59,7 +59,7 @@ export function ChatPage() {
       <section className="chat-main">
         <div className="toolbar-card">
           <label>
-            <span>\u5f53\u524d\u6a21\u578b</span>
+            <span>当前模型</span>
             <select value={settings.model} onChange={(event) => updateSettings({ model: event.target.value })}>
               <option value="gpt-4o-mini">gpt-4o-mini</option>
               <option value="gpt-4o">gpt-4o</option>
@@ -67,27 +67,27 @@ export function ChatPage() {
             </select>
           </label>
           <label>
-            <span>\u6267\u884c\u6a21\u5f0f</span>
+            <span>执行模式</span>
             <select value={settings.executionMode} onChange={(event) => updateSettings({ executionMode: event.target.value as never })}>
-              <option value="structured">\u7ed3\u6784\u5316\u4f18\u5148</option>
-              <option value="hybrid">\u6df7\u5408\u6a21\u5f0f</option>
-              <option value="vision">\u89c6\u89c9\u6a21\u5f0f</option>
+              <option value="structured">结构化优先</option>
+              <option value="hybrid">混合模式</option>
+              <option value="vision">视觉模式</option>
             </select>
           </label>
           <label>
-            <span>\u81ea\u52a8\u6267\u884c</span>
+            <span>自动执行</span>
             <select value={settings.autoExecute ? 'on' : 'off'} onChange={(event) => updateSettings({ autoExecute: event.target.value === 'on' })}>
-              <option value="off">\u5173\u95ed</option>
-              <option value="on">\u5f00\u542f</option>
+              <option value="off">关闭</option>
+              <option value="on">开启</option>
             </select>
           </label>
-          <span className="safe-tag"><ShieldCheck size={16} /> \u672c\u673a\u8fd0\u884c</span>
+          <span className="safe-tag"><ShieldCheck size={16} /> 本机运行</span>
         </div>
         <div className="conversation">
           {!hasMessages && (
             <div className="empty-state">
-              <h2>\u4f60\u597d\uff0c\u6211\u662f PC-Use Agent</h2>
-              <p>\u6211\u53ef\u4ee5\u5728\u672c\u673a\u4e0a\u6253\u5f00\u6587\u4ef6\u3001\u8fd0\u884c\u547d\u4ee4\u3001\u64cd\u4f5c\u6d4f\u89c8\u5668\uff0c\u9ad8\u98ce\u9669\u64cd\u4f5c\u4f1a\u5148\u5411\u4f60\u786e\u8ba4\u3002</p>
+              <h2>你好，我是 PC-Use Agent</h2>
+              <p>我可以在本机上打开文件、运行命令、操作浏览器，高风险操作会先向你确认。</p>
             </div>
           )}
           {messages.map((message) => <MessageBubble key={message.id} message={message} />)}
@@ -97,10 +97,10 @@ export function ChatPage() {
           <button type="submit" aria-label="send"><Send size={18} /></button>
         </form>
         <div className="bottom-actions">
-          <span>\u9ed8\u8ba4\u4e0d\u663e\u793a\u5b9e\u65f6\u5c4f\u5e55\u9884\u89c8\uff0c\u4ec5\u5728\u8c03\u8bd5\u6216\u89c6\u89c9\u6a21\u5f0f\u4e0b\u5c55\u5f00</span>
-          <button className="danger">\u505c\u6b62\u4efb\u52a1</button>
-          <button onClick={clearConversation} type="button">\u6e05\u7a7a\u5bf9\u8bdd</button>
-          <button type="button">\u65b0\u5efa\u4efb\u52a1</button>
+          <span>默认不显示实时屏幕预览，仅在调试或视觉模式下展开</span>
+          <button className="danger">停止任务</button>
+          <button onClick={clearConversation} type="button">清空对话</button>
+          <button type="button">新建任务</button>
         </div>
       </section>
       <TaskContextPanel />

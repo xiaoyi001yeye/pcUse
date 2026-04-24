@@ -15,6 +15,8 @@ export default function App() {
   const activePage = useAppStore((state) => state.activePage);
   const runtimeStatus = useAppStore((state) => state.runtimeStatus);
   const setRuntimeStatus = useAppStore((state) => state.setRuntimeStatus);
+  const setSystemInfo = useAppStore((state) => state.setSystemInfo);
+  const updateSettings = useAppStore((state) => state.updateSettings);
 
   useEffect(() => {
     let cancelled = false;
@@ -36,6 +38,12 @@ export default function App() {
     }
 
     void ensureRuntime();
+    void apiClient.getSystemInfo().then((info) => {
+      if (!cancelled) setSystemInfo(info);
+    }).catch(() => undefined);
+    void apiClient.readSettings().then((settings) => {
+      if (!cancelled) updateSettings(settings);
+    }).catch(() => undefined);
     const timer = window.setInterval(() => {
       void apiClient.health().then((health) => {
         if (!cancelled) setRuntimeStatus(health.ok ? 'online' : 'offline');
@@ -48,7 +56,7 @@ export default function App() {
       cancelled = true;
       window.clearInterval(timer);
     };
-  }, [setRuntimeStatus]);
+  }, [setRuntimeStatus, setSystemInfo, updateSettings]);
 
   return (
     <div className="app-shell">

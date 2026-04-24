@@ -2,25 +2,33 @@ import { Bot, FolderOpen, Globe, HelpCircle, History, KeyRound, MessageCircle, S
 import { useAppStore } from '../../stores/useAppStore';
 
 const navItems = [
-  { id: 'chat', label: '\u5bf9\u8bdd', icon: MessageCircle },
-  { id: 'tasks', label: '\u4efb\u52a1\u4e2d\u5fc3', icon: TerminalSquare },
-  { id: 'history', label: '\u5386\u53f2\u8bb0\u5f55', icon: History },
-  { id: 'tools', label: '\u5de5\u5177\u7ba1\u7406', icon: Wrench },
-  { id: 'permissions', label: '\u6743\u9650\u4e0e\u5b89\u5168', icon: ShieldCheck },
-  { id: 'settings', label: '\u8bbe\u7f6e', icon: Settings },
-  { id: 'help', label: '\u5e2e\u52a9\u4e0e\u53cd\u9988', icon: HelpCircle },
+  { id: 'chat', label: '对话', icon: MessageCircle },
+  { id: 'tasks', label: '任务中心', icon: TerminalSquare },
+  { id: 'history', label: '历史记录', icon: History },
+  { id: 'tools', label: '工具管理', icon: Wrench },
+  { id: 'permissions', label: '权限与安全', icon: ShieldCheck },
+  { id: 'settings', label: '设置', icon: Settings },
+  { id: 'help', label: '帮助与反馈', icon: HelpCircle },
 ];
 
 const quickTools = [
-  { label: '\u6253\u5f00\u6587\u4ef6', icon: FolderOpen },
-  { label: '\u8fd0\u884c\u547d\u4ee4', icon: TerminalSquare },
-  { label: '\u6253\u5f00\u7f51\u9875', icon: Globe },
+  { label: '打开文件', icon: FolderOpen },
+  { label: '运行命令', icon: TerminalSquare },
+  { label: '打开网页', icon: Globe },
   { label: 'API Key', icon: KeyRound },
 ];
 
 export function Sidebar() {
   const activePage = useAppStore((state) => state.activePage);
+  const runtimeStatus = useAppStore((state) => state.runtimeStatus);
+  const systemInfo = useAppStore((state) => state.systemInfo);
   const setActivePage = useAppStore((state) => state.setActivePage);
+
+  const osLabel = systemInfo?.os_display || systemInfo?.os || '检测中';
+  const archLabel = systemInfo?.arch ? ` · ${systemInfo.arch}` : '';
+  const userLabel = systemInfo?.user || '-';
+  const computerLabel = systemInfo?.computer || '-';
+  const isOnline = runtimeStatus === 'online';
 
   return (
     <aside className="sidebar">
@@ -40,11 +48,17 @@ export function Sidebar() {
         })}
       </nav>
       <div className="sidebar-section">
-        <h4>\u5feb\u6377\u5de5\u5177</h4>
+        <h4>快捷工具</h4>
         {quickTools.map((item) => {
           const Icon = item.icon;
           return (
-            <button key={item.label} className="quick-tool">
+            <button
+              key={item.label}
+              className="quick-tool"
+              onClick={() => {
+                if (item.label === 'API Key') setActivePage('settings');
+              }}
+            >
               <Icon size={18} />
               <span>{item.label}</span>
             </button>
@@ -52,11 +66,14 @@ export function Sidebar() {
         })}
       </div>
       <div className="machine-card">
-        <span className="dot" />
-        <strong>\u5728\u7ebf</strong>
-        <p>Windows 11 Pro</p>
-        <p>\u672c\u5730\u6a21\u5f0f</p>
-        <p>\u7528\u6237 Administrator</p>
+        <div className="machine-status">
+          <span className={`dot ${isOnline ? '' : 'muted-dot'}`} />
+          <strong>{isOnline ? '在线' : runtimeStatus === 'starting' ? '启动中' : '离线'}</strong>
+        </div>
+        <p>{osLabel}{archLabel}</p>
+        <p>本地模式</p>
+        <p>用户 {userLabel}</p>
+        <p title={computerLabel}>设备 {computerLabel}</p>
       </div>
     </aside>
   );

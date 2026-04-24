@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use std::fs;
 use std::path::PathBuf;
 use std::time::Duration;
 use tauri::{AppHandle, Manager, State};
@@ -30,6 +31,34 @@ fn runtime_dir(app: &AppHandle) -> PathBuf {
         .join("agent-runtime")
 }
 
+fn runtime_settings(app: &AppHandle) -> Option<Value> {
+    let path = app.path().app_config_dir().ok()?.join("settings.json");
+    let text = fs::read_to_string(path).ok()?;
+    serde_json::from_str(&text).ok()
+}
+
+fn apply_runtime_settings(command: &mut Command, settings: Option<&Value>) {
+    let Some(settings) = settings else {
+        return;
+    };
+
+    if let Some(api_key) = settings.get("apiKey").and_then(Value::as_str) {
+        if !api_key.trim().is_empty() {
+            command.env("OPENAI_API_KEY", api_key);
+        }
+    }
+    if let Some(base_url) = settings.get("baseUrl").and_then(Value::as_str) {
+        if !base_url.trim().is_empty() {
+            command.env("OPENAI_BASE_URL", base_url);
+        }
+    }
+    if let Some(model) = settings.get("model").and_then(Value::as_str) {
+        if !model.trim().is_empty() {
+            command.env("OPENAI_MODEL", model);
+        }
+    }
+}
+
 fn runtime_executable(app: &AppHandle) -> Option<PathBuf> {
     if let Ok(exe) = std::env::var("PC_USE_AGENT_RUNTIME_EXE") {
         let path = PathBuf::from(exe);
@@ -39,7 +68,9 @@ fn runtime_executable(app: &AppHandle) -> Option<PathBuf> {
     }
 
     let resource_dir = app.path().resource_dir().ok();
-    let current_exe_dir = std::env::current_exe().ok().and_then(|p| p.parent().map(|p| p.to_path_buf()));
+    let current_exe_dir = std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|p| p.to_path_buf()));
 
     let mut candidates = Vec::new();
     let names = runtime_candidate_names();
@@ -94,7 +125,10 @@ async fn probe_runtime(base_url: &str) -> Result<RuntimeHealth, String> {
             Ok(RuntimeHealth {
                 ok: true,
                 status: "online".into(),
-                version: body.get("version").and_then(Value::as_str).map(str::to_string),
+                version: body
+                    .get("version")
+                    .and_then(Value::as_str)
+                    .map(str::to_string),
                 base_url: Some(base_url.to_string()),
                 message: None,
             })
@@ -115,7 +149,10 @@ pub async fn runtime_health(state: State<'_, RuntimeState>) -> Result<RuntimeHea
 }
 
 #[tauri::command]
-pub async fn start_runtime(app: AppHandle, state: State<'_, RuntimeState>) -> Result<RuntimeHealth, String> {
+pub async fn start_runtime(
+    app: AppHandle,
+    state: State<'_, RuntimeState>,
+) -> Result<RuntimeHealth, String> {
     let health = probe_runtime(&state.base_url).await?;
     if health.ok {
         return Ok(health);
@@ -127,9 +164,15 @@ pub async fn start_runtime(app: AppHandle, state: State<'_, RuntimeState>) -> Re
     } else {
         let python = std::env::var("PC_USE_AGENT_PYTHON").unwrap_or_else(|_| "python".into());
         let mut command = Command::new(python);
-        command.arg("-m").arg("agent_runtime.server").current_dir(dir);
+        command
+            .arg("-m")
+            .arg("agent_runtime.server")
+            .current_dir(dir);
         command
     };
+
+    let settings = runtime_settings(&app);
+    apply_runtime_settings(&mut command, settings.as_ref());
 
     let child = command
         .env("PC_USE_AGENT_HOST", "127.0.0.1")
@@ -138,7 +181,10 @@ pub async fn start_runtime(app: AppHandle, state: State<'_, RuntimeState>) -> Re
         .map_err(|err| format!("failed to start runtime: {err}"))?;
 
     {
-        let mut guard = state.child.lock().map_err(|_| "runtime lock poisoned".to_string())?;
+        let mut guard = state
+            .child
+            .lock()
+            .map_err(|_| "runtime lock poisoned".to_string())?;
         *guard = Some(child);
     }
 
@@ -149,7 +195,10 @@ pub async fn start_runtime(app: AppHandle, state: State<'_, RuntimeState>) -> Re
 #[tauri::command]
 pub async fn stop_runtime(state: State<'_, RuntimeState>) -> Result<Value, String> {
     let child = {
-        let mut guard = state.child.lock().map_err(|_| "runtime lock poisoned".to_string())?;
+        let mut guard = state
+            .child
+            .lock()
+            .map_err(|_| "runtime lock poisoned".to_string())?;
         guard.take()
     };
     if let Some(mut child) = child {

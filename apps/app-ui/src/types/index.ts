@@ -51,9 +51,19 @@ export interface AppSettings {
   provider: string;
   model: string;
   baseUrl: string;
+  apiKey: string;
   executionMode: ExecutionMode;
   autoExecute: boolean;
   requireConfirmation: boolean;
+}
+
+export interface SystemInfo {
+  os: string;
+  os_display?: string;
+  arch: string;
+  user: string;
+  computer: string;
+  current_dir: string;
 }
 
 export interface TaskContext {

@@ -10,7 +10,7 @@ export function MessageBubble({ message }: Props) {
     <div className={`message-row ${message.role}`}>
       <div className="message-bubble">
         <div className="message-meta">
-          <strong>{message.role === 'user' ? '\u6211' : 'PC-Use Agent'}</strong>
+          <strong>{message.role === 'user' ? '我' : 'PC-Use Agent'}</strong>
           <span>{new Date(message.createdAt).toLocaleTimeString()}</span>
         </div>
         <p>{message.content}</p>

@@ -16,6 +16,7 @@ pub fn read_settings(app: AppHandle) -> Result<Value, String> {
             "provider": "OpenAI",
             "model": "gpt-4o-mini",
             "baseUrl": "https://api.openai.com/v1",
+            "apiKey": "",
             "executionMode": "structured",
             "autoExecute": false,
             "requireConfirmation": true
