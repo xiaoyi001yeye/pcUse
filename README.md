@@ -10,7 +10,7 @@ This repository contains a runnable MVP codebase based on the design diagrams:
 - Tool routing for files, commands, browser, UI automation, screenshots, and system info
 - SQLite storage for tasks, steps, logs, and artifacts
 - Permission guard and auditable policy files
-- GitHub Actions workflow for producing Windows installers and artifacts
+- GitHub Actions workflow for producing Windows installers and macOS DMG artifacts
 
 ## Repository layout
 
@@ -74,7 +74,7 @@ pnpm dev:desktop
 ./scripts/build.ps1
 ```
 
-The GitHub Actions workflow in `.github/workflows/build-windows.yml` builds the UI, packages the Python runtime, runs `tauri build`, and uploads Windows artifacts.
+The GitHub Actions workflow in `.github/workflows/build-installers.yml` builds the UI, packages the Python runtime sidecar, runs `tauri build`, and uploads Windows installer plus macOS DMG artifacts on each push.
 
 ## Security defaults
 

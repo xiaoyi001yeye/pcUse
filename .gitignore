@@ -50,3 +50,4 @@ apps/desktop-host/src-tauri/gen/
 apps/desktop-host/src-tauri/icons/*.ico
 !apps/desktop-host/src-tauri/icons/icon.ico
 apps/desktop-host/src-tauri/icons/*.icns
+!apps/desktop-host/src-tauri/icons/icon.icns

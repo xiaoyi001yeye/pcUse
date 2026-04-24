@@ -42,18 +42,47 @@ fn runtime_executable(app: &AppHandle) -> Option<PathBuf> {
     let current_exe_dir = std::env::current_exe().ok().and_then(|p| p.parent().map(|p| p.to_path_buf()));
 
     let mut candidates = Vec::new();
+    let names = runtime_candidate_names();
     if let Some(dir) = resource_dir {
-        candidates.push(dir.join("pc-use-agent-runtime.exe"));
-        candidates.push(dir.join("bin").join("pc-use-agent-runtime.exe"));
-        candidates.push(dir.join("pc-use-agent-runtime-x86_64-pc-windows-msvc.exe"));
-        candidates.push(dir.join("bin").join("pc-use-agent-runtime-x86_64-pc-windows-msvc.exe"));
+        for name in &names {
+            candidates.push(dir.join(name));
+            candidates.push(dir.join("bin").join(name));
+        }
     }
     if let Some(dir) = current_exe_dir {
-        candidates.push(dir.join("pc-use-agent-runtime.exe"));
-        candidates.push(dir.join("pc-use-agent-runtime-x86_64-pc-windows-msvc.exe"));
+        for name in &names {
+            candidates.push(dir.join(name));
+        }
     }
 
     candidates.into_iter().find(|candidate| candidate.exists())
+}
+
+fn runtime_candidate_names() -> Vec<&'static str> {
+    let mut names = Vec::new();
+
+    #[cfg(target_os = "windows")]
+    {
+        names.push("pc-use-agent-runtime.exe");
+        names.push("pc-use-agent-runtime-x86_64-pc-windows-msvc.exe");
+    }
+
+    #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
+    {
+        names.push("pc-use-agent-runtime-aarch64-apple-darwin");
+    }
+
+    #[cfg(all(target_os = "macos", target_arch = "x86_64"))]
+    {
+        names.push("pc-use-agent-runtime-x86_64-apple-darwin");
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        names.push("pc-use-agent-runtime");
+    }
+
+    names
 }
 
 async fn probe_runtime(base_url: &str) -> Result<RuntimeHealth, String> {
