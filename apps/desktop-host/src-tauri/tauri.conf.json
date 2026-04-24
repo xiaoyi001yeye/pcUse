@@ -28,6 +28,7 @@
   "bundle": {
     "active": true,
     "targets": ["nsis", "msi"],
+    "icon": ["icons/icon.ico"],
     "externalBin": ["bin/pc-use-agent-runtime"],
     "resources": [
       "../../../agent-runtime",
