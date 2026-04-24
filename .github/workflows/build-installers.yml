@@ -68,7 +68,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pc-use-agent-windows-artifacts
-          path: apps/desktop-host/src-tauri/target/release/bundle/**/*.exe
+          path: |
+            apps/desktop-host/src-tauri/target/release/bundle/**/*.exe
+            apps/desktop-host/src-tauri/target/**/release/bundle/**/*.exe
           if-no-files-found: error
 
   build-macos:
@@ -132,5 +134,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pc-use-agent-macos-artifacts
-          path: apps/desktop-host/src-tauri/target/release/bundle/**/*.dmg
+          path: |
+            apps/desktop-host/src-tauri/target/release/bundle/**/*.dmg
+            apps/desktop-host/src-tauri/target/**/release/bundle/**/*.dmg
           if-no-files-found: error
